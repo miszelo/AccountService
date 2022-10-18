@@ -1,6 +1,6 @@
 package account.services;
 
-import account.accounts.User;
+import account.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
