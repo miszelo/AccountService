@@ -1,10 +1,7 @@
 package account.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -20,6 +17,7 @@ import java.util.Objects;
 @Table(name = "users")
 public class User {
     @Id
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_user", nullable = false)
     private Long id;
@@ -33,8 +31,8 @@ public class User {
     private String lastname;
 
     @Email(regexp = "\\w+(@acme.com)$", message = "Mail does not include @acme.com")
-    @NotEmpty
-    @Column(name = "email", nullable = false)
+    @NotEmpty(message = "email required")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
