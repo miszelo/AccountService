@@ -1,6 +1,6 @@
 package account.security;
 
-import account.entity.User;
+import account.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

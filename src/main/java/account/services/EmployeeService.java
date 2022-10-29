@@ -1,9 +1,9 @@
 package account.services;
 
-import account.entity.User;
+import account.model.User;
 import account.repositories.UserRepository;
-import account.security.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,9 +18,8 @@ public class EmployeeService {
     }
 
 
-    public ResponseEntity<User> getUserInfo(UserDetailsImpl userDetails) {
+    public ResponseEntity<User> getUserInfo(UserDetails userDetails) {
         Optional<User> user = userRepository.findByEmailIgnoreCase(userDetails.getUsername());
-        //System.out.println(user);
         return ResponseEntity.of(user);
     }
 }
