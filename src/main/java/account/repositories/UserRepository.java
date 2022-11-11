@@ -1,6 +1,6 @@
 package account.repositories;
 
-import account.model.User;
+import account.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +12,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailIgnoreCase(String email);
 
     boolean existsUserByEmailIgnoreCase(String email);
+
 }

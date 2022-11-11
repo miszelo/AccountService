@@ -1,9 +1,9 @@
 package account.controllers;
 
 import account.controllers.mapper.UserMapper;
-import account.model.User;
-import account.model.dto.NewPasswordDto;
-import account.model.dto.UserDto;
+import account.model.user.User;
+import account.model.dto.NewPasswordDTO;
+import account.model.dto.UserDTO;
 import account.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +28,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<User> registerAccount(@RequestBody @Valid UserDto userDto) {
-        return userService.registerAccount(userMapper.mapUserDtoToUser(userDto));
+    public ResponseEntity<User> registerAccount(@RequestBody @Valid UserDTO userDto) {
+        return userService.registerAccount(userMapper.mapUserDTOToUser(userDto));
     }
 
     @PostMapping("/changepass")
     public ResponseEntity<Map<String, String>> changePassword(@AuthenticationPrincipal UserDetails userDetails,
-                                                              @RequestBody @Valid NewPasswordDto newPasswordDto) {
+                                                              @RequestBody @Valid NewPasswordDTO newPasswordDto) {
         return userService.changePassword(userDetails, newPasswordDto.getNewPassword());
     }
 }

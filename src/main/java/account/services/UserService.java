@@ -4,7 +4,7 @@ import account.exceptions.NotLoggedInException;
 import account.exceptions.PasswordsMustBeDifferentException;
 import account.exceptions.UserExistException;
 import account.exceptions.UserNotFoundException;
-import account.model.User;
+import account.model.user.User;
 import account.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,6 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public ResponseEntity<User> registerAccount(User user) {
-        System.out.println("TEST");
         if (userRepository.existsUserByEmailIgnoreCase(user.getEmail())) {
             throw new UserExistException();
         }

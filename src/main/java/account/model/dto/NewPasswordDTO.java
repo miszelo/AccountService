@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewPasswordDto {
+public class NewPasswordDTO {
 
     @NotEmpty
     @Password
