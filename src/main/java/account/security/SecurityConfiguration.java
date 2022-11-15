@@ -1,10 +1,11 @@
 package account.security;
 
+import account.model.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,6 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true)
 public class SecurityConfiguration {
 
     private final UserDetailsServiceImpl userDetailsService;
@@ -22,14 +27,14 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(header -> header.disable())
+                .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers.frameOptions().disable())
                 .authorizeRequests(auth -> {
-                    auth.antMatchers(HttpMethod.POST,"/api/auth/signup").permitAll();
-                    auth.antMatchers("/h2-console/**").permitAll();
-                    auth.antMatchers(HttpMethod.POST, "api/acct/payments").permitAll();
-                    auth.antMatchers(HttpMethod.PUT, "api/acct/payments").permitAll();
-                    auth.antMatchers("/api/empl/payment", "api/auth/changepass").authenticated();
+                    auth.antMatchers("/api/auth/signup", "/h2-console/**").permitAll();
+                    auth.antMatchers("/api/auth/changepass").hasAnyAuthority(Role.ROLE_USER.name(), Role.ROLE_ACCOUNTANT.name(), Role.ROLE_ADMINISTRATOR.name());
+                    auth.antMatchers("/api/acct/payments").hasAnyAuthority(Role.ROLE_ACCOUNTANT.name());
+                    auth.antMatchers("/api/empl/payment").hasAnyAuthority(Role.ROLE_USER.name(), Role.ROLE_ACCOUNTANT.name());
+                    auth.antMatchers("/api/admin/**").hasAnyAuthority(Role.ROLE_ADMINISTRATOR.name());
                 })
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -37,6 +42,7 @@ public class SecurityConfiguration {
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
+
 
     @Bean
     public static BCryptPasswordEncoder passwordEncoder() {

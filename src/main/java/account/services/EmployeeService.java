@@ -1,6 +1,6 @@
 package account.services;
 
-import account.controllers.mapper.PaymentMapper;
+import account.mapper.PaymentMapper;
 import account.exceptions.PaymentNotFoundException;
 import account.exceptions.UserNotFoundException;
 import account.model.dto.PaymentInfoDTO;
@@ -8,7 +8,7 @@ import account.model.payment.Payment;
 import account.model.user.User;
 import account.repositories.PaymentRepository;
 import account.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class EmployeeService {
 
     private final UserRepository userRepository;

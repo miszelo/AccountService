@@ -1,4 +1,4 @@
-package account.controllers.mapper;
+package account.mapper;
 
 import account.exceptions.UserNotFoundException;
 import account.model.dto.NewPaymentDTO;

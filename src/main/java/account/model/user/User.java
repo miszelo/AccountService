@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,6 +19,7 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 public class User {
+
     @Id
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,4 +37,15 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Payment> payments;
+
+        @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<Role> roles = new ArrayList<>();
+//    @ManyToMany(fetch = FetchType.EAGER,
+//            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+//    @JoinTable(name = "user_group",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "group_id"))
+//    private Set<Group> roles;
 }

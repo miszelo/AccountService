@@ -5,7 +5,7 @@ import account.exceptions.PaymentNotFoundException;
 import account.model.payment.Payment;
 import account.model.record.ResponseStatus;
 import account.repositories.PaymentRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AcctService {
 
     private final PaymentRepository paymentRepository;

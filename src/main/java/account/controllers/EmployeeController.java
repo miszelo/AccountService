@@ -22,7 +22,7 @@ public class EmployeeController {
 
     @GetMapping("/payment")
     public ResponseEntity<?> getEmployeeInfo(@AuthenticationPrincipal UserDetails userDetails,
-                                                          @RequestParam(required = false) @Date String period) {
+                                             @RequestParam(required = false) @Date String period) {
         return employeeService.getEmployeeInfo(userDetails, period);
     }
 

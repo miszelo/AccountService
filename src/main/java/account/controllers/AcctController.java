@@ -1,11 +1,11 @@
 package account.controllers;
 
-import account.controllers.mapper.PaymentMapper;
+import account.mapper.PaymentMapper;
 import account.model.dto.NewPaymentDTO;
 import account.model.payment.Payment;
 import account.model.record.ResponseStatus;
 import account.services.AcctService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Validated
 @RestController
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/api/acct")
 public class AcctController {
 

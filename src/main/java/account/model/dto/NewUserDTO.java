@@ -1,6 +1,7 @@
 package account.model.dto;
 
 import account.validation.Password;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.validation.constraints.Email;
@@ -11,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDTO {
+public class NewUserDTO {
 
     @NotEmpty(message = "name required")
     private String name;
@@ -24,6 +25,7 @@ public class UserDTO {
     private String email;
 
     @Password
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotEmpty(message = "password required")
     private String password;
 }
