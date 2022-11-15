@@ -1,10 +1,9 @@
 package account.services;
 
-import account.mapper.UserMapper;
-import account.exceptions.NotLoggedInException;
 import account.exceptions.PasswordsMustBeDifferentException;
 import account.exceptions.UserExistException;
 import account.exceptions.UserNotFoundException;
+import account.mapper.UserMapper;
 import account.model.dto.UserInfoDTO;
 import account.model.user.Role;
 import account.model.user.User;
@@ -29,8 +28,12 @@ public class UserService {
         if (userRepository.existsUserByEmailIgnoreCase(user.getEmail())) {
             throw new UserExistException();
         }
+        if (userRepository.findAll().isEmpty()) {
+            user.grantAuthority(Role.ROLE_ADMINISTRATOR);
+        } else {
+            user.grantAuthority(Role.ROLE_USER);
+        }
 
-        user.getRoles().add(userRepository.findAll().isEmpty() ? Role.ROLE_ADMINISTRATOR : Role.ROLE_USER);
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -39,9 +42,6 @@ public class UserService {
     }
 
     public ResponseEntity<Map<String, String>> changePassword(UserDetails userDetails, String newPassword) {
-        if (userDetails == null) {
-            throw new NotLoggedInException();
-        }
         User user = userRepository.findByEmailIgnoreCase(userDetails.getUsername())
                 .orElseThrow(UserNotFoundException::new);
 

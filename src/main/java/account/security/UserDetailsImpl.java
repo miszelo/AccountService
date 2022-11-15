@@ -7,7 +7,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @AllArgsConstructor
@@ -17,10 +18,11 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles().stream().
-                map(role -> new SimpleGrantedAuthority(role.name())).
-                collect(Collectors.toList());
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.toString())));
+        return authorities;
     }
+
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -38,7 +40,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        //return !user.isLocked();
         return true;
     }
 

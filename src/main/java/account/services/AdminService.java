@@ -1,6 +1,5 @@
 package account.services;
 
-import account.exceptions.UserNotFoundException;
 import account.mapper.UserMapper;
 import account.model.dto.ChangeUserRoleDTO;
 import account.model.dto.DeleteUserResponseDTO;
@@ -16,8 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +43,15 @@ public class AdminService {
 
     public ResponseEntity<UserInfoDTO> changeUserRole(ChangeUserRoleDTO changeUserRoleDTO) {
         User user = userRepository.findByEmailIgnoreCase(changeUserRoleDTO.getUser())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+
+        changeUserRoleDTO.setRole("ROLE_" + changeUserRoleDTO.getRole());
+
+        if (Arrays.stream(Role.values())
+                .noneMatch(role ->
+                        role.toString().equals(changeUserRoleDTO.getRole()))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found!");
+        }
 
         switch (changeUserRoleDTO.getOperation()) {
             case GRANT -> grantRole(user, changeUserRoleDTO.getRole());
@@ -54,33 +59,40 @@ public class AdminService {
             default -> throw new IllegalStateException("Unexpected value: " + changeUserRoleDTO.getOperation());
         }
 
+        userRepository.save(user);
         return ResponseEntity.ok(userMapper.mapUserToUserInfoDTO(user));
     }
 
-    private void grantRole(User user, Role role) {
-        if (user.getRoles().stream()
-                .anyMatch(r -> Objects.equals(Role.ROLE_ADMINISTRATOR, r))
-                && user.getRoles().stream()
-                .anyMatch(r -> List.of(Role.ROLE_ACCOUNTANT, Role.ROLE_USER).contains(r))) {
+    private void grantRole(User user, String role) {
+        if (isUserBusiness(user) && role.equals(Role.ROLE_ADMINISTRATOR.name())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user cannot combine administrative and business roles!");
         }
-        List<Role> newRoles = user.getRoles();
-        newRoles.add(role);
-        user.setRoles(newRoles);
-        userRepository.save(user);
+        if (isUserAdmin(user) && (role.equals(Role.ROLE_USER.name()) || role.equals(Role.ROLE_ACCOUNTANT.name()))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user cannot combine administrative and business roles!");
+        }
+        user.grantAuthority(Role.valueOf(role));
     }
 
-    private void removeRole(User user, Role role) {
-        if (role == Role.ROLE_ADMINISTRATOR) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!");
-        }
-        if (!Arrays.asList(Role.values()).contains(role)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role not found!");
-        }
-        if (user.getRoles().size() == 0) {
+    private void removeRole(User user, String role) {
+        if (!user.getRoles().contains(Role.valueOf(role))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user does not have a role!");
         }
-        userRepository.save(user);
+        if (role.equals(Role.ROLE_ADMINISTRATOR.name())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!");
+        }
+        if (user.getRoles().size() == 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user must have at least one role!");
+        }
+        user.removeAuthority(Role.valueOf(role));
     }
 
+    private boolean isUserBusiness(User user) {
+        return user.getRoles().stream()
+                .anyMatch(r -> List.of(Role.ROLE_USER, Role.ROLE_ACCOUNTANT).contains(r));
+    }
+
+    private boolean isUserAdmin(User user) {
+        return user.getRoles().stream()
+                .anyMatch(r -> r == Role.ROLE_ADMINISTRATOR);
+    }
 }

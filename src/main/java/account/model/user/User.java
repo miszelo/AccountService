@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,14 +37,21 @@ public class User {
     @JsonIgnore
     private List<Payment> payments;
 
-        @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<Role> roles = new ArrayList<>();
-//    @ManyToMany(fetch = FetchType.EAGER,
-//            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-//    @JoinTable(name = "user_group",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "group_id"))
-//    private Set<Group> roles;
+    private Set<Role> roles;
+
+    public void grantAuthority(Role role) {
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+        roles.add(role);
+    }
+
+    public void removeAuthority(Role role) {
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+        roles.remove(role);
+    }
 }
