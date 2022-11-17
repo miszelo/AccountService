@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
+
+    private boolean enabled;
+
+    private boolean accountNonLocked;
+
+    private int failedAttempt;
+
+    private Date lockTime;
 
     public void grantAuthority(Role role) {
         if (roles == null) {

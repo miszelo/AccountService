@@ -1,6 +1,7 @@
 package account.security;
 
 import account.exceptions.UserNotFoundException;
+import account.model.user.User;
 import account.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +17,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmailIgnoreCase(email)
-                .map(UserDetailsImpl::new)
-                .orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        return new UserDetailsImpl(user);
     }
 }

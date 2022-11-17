@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class EmployeeService {
 
+    private final AuditorService auditorService;
+
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
 

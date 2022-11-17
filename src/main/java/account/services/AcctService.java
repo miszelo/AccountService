@@ -15,7 +15,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class AcctService {
-
     private final PaymentRepository paymentRepository;
 
     @Transactional
@@ -26,7 +25,6 @@ public class AcctService {
             }
         });
         paymentRepository.saveAll(payments);
-
         return ResponseEntity.ok(new ResponseStatus("Added successfully!"));
     }
 

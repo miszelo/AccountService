@@ -5,6 +5,7 @@ import account.exceptions.UserExistException;
 import account.exceptions.UserNotFoundException;
 import account.mapper.UserMapper;
 import account.model.dto.UserInfoDTO;
+import account.model.record.Action;
 import account.model.user.Role;
 import account.model.user.User;
 import account.repositories.UserRepository;
@@ -19,9 +20,10 @@ import java.util.Map;
 @Service
 @AllArgsConstructor
 public class UserService {
+
+    private final AuditorService auditorService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
     private final BCryptPasswordEncoder passwordEncoder;
 
     public ResponseEntity<UserInfoDTO> registerAccount(User user) {
@@ -36,8 +38,11 @@ public class UserService {
 
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setEnabled(true);
+        user.setAccountNonLocked(true);
         userRepository.save(user);
         UserInfoDTO userInfoDTO = userMapper.mapUserToUserInfoDTO(user);
+        auditorService.addEvent(Action.CREATE_USER, user.getEmail());
         return ResponseEntity.ok(userInfoDTO);
     }
 
@@ -51,6 +56,7 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+        auditorService.addEvent(Action.CHANGE_PASSWORD, user.getEmail());
         return ResponseEntity.ok(Map.of("email", user.getEmail().toLowerCase(), "status", "The password has been updated successfully"));
     }
 }
